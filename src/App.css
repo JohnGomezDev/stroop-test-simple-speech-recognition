@@ -1,0 +1,166 @@
+main {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem 0;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: #f5f4f0;
+}
+
+.card {
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.card h1 {
+  font-size: 22px;
+  font-weight: 500;
+  color: #1a1a1a;
+  letter-spacing: -0.3px;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  line-height: 1.5;
+  margin-top: -0.5rem;
+}
+
+.subtitle em {
+  font-style: normal;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.card > button {
+  width: 100%;
+  padding: 11px 0;
+  background: #3c3489;
+  color: #eeedfe;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.card > button:hover {
+  background: #534ab7;
+}
+.card > button:active {
+  transform: scale(0.98);
+}
+
+.timer-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: #f5f4f0;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.timer-label {
+  font-size: 11px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.timer-value {
+  font-size: 40px;
+  font-weight: 500;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.word-display {
+  font-size: 52px;
+  font-weight: 600;
+  letter-spacing: -1.5px;
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+  text-align: center;
+}
+
+.score-box {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f5f4f0;
+  border-radius: 8px;
+  padding: 0.85rem 1.1rem;
+}
+
+.score-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.correct {
+  background: #e1f5ee;
+  color: #0f6e56;
+}
+
+.incorrect {
+  background: #f5e1e1;
+  color: #6e0f0f;
+}
+
+.score-text {
+  font-size: 13px;
+  color: #666;
+  flex: 1;
+}
+
+.score-number {
+  font-size: 20px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.legal {
+  font-size: 12px;
+  opacity: 0.4;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 1.75rem 1.1rem;
+  }
+  .word-display {
+    font-size: 38px;
+  }
+  .timer-value {
+    font-size: 32px;
+  }
+}
