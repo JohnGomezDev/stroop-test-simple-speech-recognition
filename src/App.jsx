@@ -3,7 +3,7 @@ import { useSpeechRecognition } from "react-speech-recognition";
 import "./App.css";
 
 function App() {
-  const { transcript, browserSupportsSpeechRecognition } =
+  const { listening, browserSupportsSpeechRecognition } =
     useSpeechRecognition();
 
   const { start, stop, started, display, time, score } = useStroop();
@@ -34,6 +34,8 @@ function App() {
             {time}
           </span>
         </div>
+
+        <p>{listening ? "Escuchando..." : "Ya no se escucha"}</p>
 
         <h2
           className="word-display"

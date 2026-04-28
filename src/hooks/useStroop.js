@@ -17,8 +17,7 @@ const useStroop = () => {
     incorrect: 0,
   });
 
-  const { resetTranscript, transcript, browserSupportsSpeechRecognition } =
-    useSpeechRecognition();
+  const { resetTranscript, transcript } = useSpeechRecognition();
 
   const generateRandom = useCallback(() => {
     resetTranscript();
