@@ -5,7 +5,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 
 const testTime = 45;
-const debounceTime = 300;
+const debounceTime = 200;
 
 const useStroop = () => {
   const [display, setDisplay] = useState(null);
