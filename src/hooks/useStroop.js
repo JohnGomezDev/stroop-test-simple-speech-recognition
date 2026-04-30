@@ -19,18 +19,22 @@ const useStroop = () => {
   const [result, setResult] = useState(null);
 
   const debounceTimer = useRef(null);
+  const displayRef = useRef(null);
   const lastTranscript = useRef("");
+  const lastProcessedTranscript = useRef("");
 
   const { listening, resetTranscript, transcript } = useSpeechRecognition();
 
   const generateRandom = useCallback(() => {
     const randomReal = Math.floor(Math.random() * colors.length);
     const randomLabel = Math.floor(Math.random() * colors.length);
-
-    setDisplay({
+    const next = {
       ...colors[randomReal],
       label: colorLabels[randomLabel],
-    });
+    };
+
+    displayRef.current = next;
+    setDisplay(next);
 
     setDisplayKey((prev) => prev + 1);
   }, []);
@@ -45,10 +49,13 @@ const useStroop = () => {
 
   const stop = () => {
     SpeechRecognition.stopListening();
+    clearTimeout(debounceTimer.current);
+    lastTranscript.current = "";
+    lastProcessedTranscript.current = "";
+    displayRef.current = null;
+    resetTranscript();
     setStarted(false);
     setDisplay(null);
-    clearTimeout(debounceTimer.current);
-    resetTranscript();
   };
 
   useEffect(() => {
@@ -63,7 +70,7 @@ const useStroop = () => {
   }, [started, time]);
 
   useEffect(() => {
-    if (!transcript || !display || !started) return;
+    if (!transcript || !started) return;
 
     lastTranscript.current = transcript;
 
@@ -71,7 +78,12 @@ const useStroop = () => {
 
     debounceTimer.current = setTimeout(() => {
       const spoken = lastTranscript.current.toLowerCase().trim();
-      const expected = display.real.toLowerCase().trim();
+      if (!spoken || spoken === lastProcessedTranscript.current) return;
+
+      const expected = displayRef.current?.real?.toLowerCase().trim();
+      if (!expected) return;
+
+      lastProcessedTranscript.current = spoken;
 
       if (spoken.includes(expected)) {
         setScore((prev) => ({ ...prev, correct: prev.correct + 1 }));
@@ -81,15 +93,23 @@ const useStroop = () => {
         setResult("incorrect");
       }
 
-      resetTranscript();
+      SpeechRecognition.stopListening();
       lastTranscript.current = "";
+      lastProcessedTranscript.current = "";
       generateRandom();
+
+      setTimeout(() => {
+        SpeechRecognition.startListening({
+          language: "es-CO",
+          continuous: true,
+        });
+      }, 150);
 
       setTimeout(() => setResult(null), 500);
     }, debounceTime);
 
     return () => clearTimeout(debounceTimer.current);
-  }, [transcript, display, started, generateRandom, resetTranscript]);
+  }, [transcript, started, generateRandom]);
 
   return {
     start,
