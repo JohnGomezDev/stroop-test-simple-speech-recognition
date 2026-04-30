@@ -36,13 +36,6 @@ function App() {
           </span>
         </div>
 
-        <div>
-          <h3>{listening ? "Escuchando..." : "Apagado"}</h3>
-          <p>{transcript}</p>
-        </div>
-
-        <pre>{JSON.stringify(score, null, 2)}</pre>
-
         <div className="display-box">
           <h2
             key={displayKey}
