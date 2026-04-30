@@ -3,10 +3,11 @@ import { useSpeechRecognition } from "react-speech-recognition";
 import "./App.css";
 
 function App() {
-  const { transcript, browserSupportsSpeechRecognition } =
+  const { listening, transcript, browserSupportsSpeechRecognition } =
     useSpeechRecognition();
 
-  const { start, stop, started, display, time, score } = useStroop();
+  const { start, stop, started, display, displayKey, time, score, result } =
+    useStroop();
 
   if (!browserSupportsSpeechRecognition) {
     return (
@@ -35,15 +36,29 @@ function App() {
           </span>
         </div>
 
-        <p>{transcript}</p>
+        <div>
+          <h3>{listening ? "Escuchando..." : "Apagado"}</h3>
+          <p>{transcript}</p>
+        </div>
 
-        <h2
-          className="word-display"
-          id="word"
-          style={{ color: display?.hex ?? "#000000" }}
-        >
-          {display?.label ?? "- -"}
-        </h2>
+        <pre>{JSON.stringify(score, null, 2)}</pre>
+
+        <div className="display-box">
+          <h2
+            key={displayKey}
+            className="word-display"
+            id="word"
+            style={{ color: display?.hex ?? "#000000" }}
+          >
+            {display?.label ?? "- -"}
+          </h2>
+
+          {result && (
+            <div key={result + displayKey} className={`result ${result}`}>
+              {result === "correct" ? "✓" : "✗"}
+            </div>
+          )}
+        </div>
 
         {time === 0 && (
           <>

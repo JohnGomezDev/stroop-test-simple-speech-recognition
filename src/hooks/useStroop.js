@@ -1,27 +1,29 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { colorLabels, colors } from "../lib/consts";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 
 const testTime = 45;
+const debounceTime = 300;
 
 const useStroop = () => {
   const [display, setDisplay] = useState(null);
-
+  const [displayKey, setDisplayKey] = useState(0);
   const [started, setStarted] = useState(false);
   const [time, setTime] = useState(testTime);
-
   const [score, setScore] = useState({
     correct: 0,
     incorrect: 0,
   });
+  const [result, setResult] = useState(null);
 
-  const { resetTranscript, transcript } = useSpeechRecognition();
+  const debounceTimer = useRef(null);
+  const lastTranscript = useRef("");
+
+  const { listening, resetTranscript, transcript } = useSpeechRecognition();
 
   const generateRandom = useCallback(() => {
-    resetTranscript();
-
     const randomReal = Math.floor(Math.random() * colors.length);
     const randomLabel = Math.floor(Math.random() * colors.length);
 
@@ -29,11 +31,14 @@ const useStroop = () => {
       ...colors[randomReal],
       label: colorLabels[randomLabel],
     });
+
+    setDisplayKey((prev) => prev + 1);
   }, []);
 
   const start = () => {
-    setTime(testTime);
     setStarted(true);
+    setTime(testTime);
+    setScore({ correct: 0, incorrect: 0 });
     generateRandom();
     SpeechRecognition.startListening({ language: "es-CO", continuous: true });
   };
@@ -42,7 +47,8 @@ const useStroop = () => {
     SpeechRecognition.stopListening();
     setStarted(false);
     setDisplay(null);
-    setTime(testTime);
+    clearTimeout(debounceTimer.current);
+    resetTranscript();
   };
 
   useEffect(() => {
@@ -57,26 +63,43 @@ const useStroop = () => {
   }, [started, time]);
 
   useEffect(() => {
-    if (display && transcript) {
-      if (
-        transcript.toLowerCase().trim() === display.real.toLowerCase().trim()
-      ) {
-        setScore({ ...score, correct: score.correct + 1 });
-        generateRandom();
+    if (!transcript || !display || !started) return;
+
+    lastTranscript.current = transcript;
+
+    clearTimeout(debounceTimer.current);
+
+    debounceTimer.current = setTimeout(() => {
+      const spoken = lastTranscript.current.toLowerCase().trim();
+      const expected = display.real.toLowerCase().trim();
+
+      if (spoken.includes(expected)) {
+        setScore((prev) => ({ ...prev, correct: prev.correct + 1 }));
+        setResult("correct");
       } else {
-        setScore({ ...score, incorrect: score.incorrect + 1 });
-        generateRandom();
+        setScore((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+        setResult("incorrect");
       }
-    }
-  }, [transcript, display, generateRandom]);
+
+      resetTranscript();
+      lastTranscript.current = "";
+      generateRandom();
+
+      setTimeout(() => setResult(null), 500);
+    }, debounceTime);
+
+    return () => clearTimeout(debounceTimer.current);
+  }, [transcript, display, started, generateRandom, resetTranscript]);
 
   return {
     start,
     stop,
     display,
+    displayKey,
     started,
     time,
     score,
+    result,
   };
 };
 
